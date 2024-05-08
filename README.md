@@ -1,4 +1,4 @@
-# EXPERIMENT--07-SQUARE-WAVE-GENERATION-AT-THE-OUTPUT-PIN-USING-TIMER
+# EXPERIMENT--06-SQUARE-WAVE-GENERATION-AT-THE-OUTPUT-PIN-USING-TIMER
 
 ### Aim:
 To generate a PWM wave at the timer pin output and  simuate it on  proteus using an virtual oscilloscope  
@@ -96,39 +96,125 @@ Step14. click on debug and simulate using simulation as shown below
   
 
 ## STM 32 CUBE PROGRAM :
+```
+#include "main.h"
 
+TIM_HandleTypeDef htim2;
 
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_TIM2_Init(void);
 
+int main(void)
+{
+  
+  HAL_Init();
 
+  SystemClock_Config();
 
+  MX_GPIO_Init();
+  MX_TIM2_Init();
+  HAL_TIM_Base_Start(&htim2);
+  HAL_TIM_PWM_Init(&htim2);
+  HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
+ 
+  while (1)
+  {
+    
+  }
+  
+}
+static void MX_TIM2_Init(void)
+{
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  htim2.Instance = TIM2;
+  htim2.Init.Prescaler = 0;
+  htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim2.Init.Period = 10000;
+  htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 2500;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  HAL_TIM_MspPostInit(&htim2);
+}
+
+```
 ## Output screen shots of proteus  :
- 
- 
+ ### For Pulse at 5000 :
+ ![image](https://github.com/balaji-21005757/EXPERIMENT--07-SQUARE-WAVE-GENERATION-AT-THE-OUTPUT-PIN-USING-TIMER/assets/94372294/70b65883-01e6-471d-92e8-eff3b0e64048)
+
+ ### For Pulse at 7500 :
+ ![image](https://github.com/balaji-21005757/EXPERIMENT--07-SQUARE-WAVE-GENERATION-AT-THE-OUTPUT-PIN-USING-TIMER/assets/94372294/2afc6b74-55bb-4143-ad94-815a024efd07)
+
+ ### For Pulse at 2500 :
+ ![image](https://github.com/balaji-21005757/EXPERIMENT--07-SQUARE-WAVE-GENERATION-AT-THE-OUTPUT-PIN-USING-TIMER/assets/94372294/91166b36-3a14-4192-90e2-3d5d1d432a42)
+
+
  ## CIRCUIT DIAGRAM (EXPORT THE GRAPHICS TO PDF AND ADD THE SCREEN SHOT HERE): 
- 
+ ![image](https://github.com/balaji-21005757/EXPERIMENT--07-SQUARE-WAVE-GENERATION-AT-THE-OUTPUT-PIN-USING-TIMER/assets/94372294/048a7fd4-ed35-4790-8538-8f71e6405840)
+
 
 ## DUTY CYCLE AND FREQUENCY CALCULATION 
-FOR PULSE AT 500
-
-TON = 
-TOFF=
-TOTAL TIME = 
+## FOR PULSE AT 5000:
+```
+TON =1.5*0.2m = 0.3ms 
+TOFF=1.5*0.2m = 0.3ms
+TOTAL TIME = 0.3ms + 0.3ms = 0.6ms
 FREQUENCY = 1/(TOTAL TIME)
+F=1/0.6ms = 1.66*10^3Hz
+F = 1.6 KHz
+Duty = 0.3ms/0.6ms = 1/2 = 0.5*100 = 50%
+```
 
-FOR PULSE AT 700
-
-TON = 
-TOFF=
-TOTAL TIME = 
+## FOR PULSE AT 7500:
+```
+TON = 2.2*0.2m = 0.44ms
+TOFF = 0.8*0.2m = 0.16ms 
+TOTAL TIME = 0.44ms + 0.16ms = 0.6ms
 FREQUENCY = 1/(TOTAL TIME)
+F=1/0.6ms = 1.666*10^3Hz
+F = 1.6 KHz
+Duty = 0.44ms/0.6ms = 0.73*100 = 73%
+```
 
-
-FOR PULSE AT 900
-
-TON = 
-TOFF=
-TOTAL TIME = 
+## FOR PULSE AT 2500:
+```
+TON = 0.8*0.2m = 0.16ms
+TOFF= 2.2*0.2m = 0.44ms
+TOTAL TIME = 0.16ms + 0.44ms = 0.6ms
 FREQUENCY = 1/(TOTAL TIME)
+F=1/0.6ms = 1.666*10^3Hz
+F = 1.6KHz
+Duty = 0.16ms/0.6ms = 0.26*100 = 26%
+```
 
 
 ## Result :
